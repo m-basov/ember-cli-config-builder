@@ -1,4 +1,5 @@
-import { visit, parseValue, builders, namedTypes, maybeCall } from './common';
+import { visit, parseValue, builders, namedTypes } from './common';
+import { isLastIterItem, splitPath } from '../utils/common';
 
 export function findObjectByIdentifier(ast, key) {
   let obj;
@@ -12,70 +13,66 @@ export function findObjectByIdentifier(ast, key) {
   return obj;
 }
 
-export function traverseObjectNestedPath(ast, path, cbs: { success?: (any, string) => any, error?: (any, string) => any, each?: (any, string) => any, afterAll?: () => any }) {
-  let segments = path.split('.').entries();
+export function traverseObjectNestedPath(ast, path): any {
+  let { segments, lastIdx } = splitPath(path);
   let currentSegment = segments.next();
+
+  let result = {
+    error: true,
+    nodePath: null,
+    segment: currentSegment.value[1],
+    isLastSegment: isLastIterItem(currentSegment, lastIdx)
+  };
+
   visit(ast, "Property", function (nodePath) {
-    let [, key] = currentSegment.value;
-    maybeCall(cbs.each, this, nodePath, key);
-    if (nodePath.node.key.name !== key) {
-      maybeCall(cbs.error, this, nodePath, key)
+    // if key is not the same as node name stop traversing this subtree
+    if (nodePath.node.key.name !== currentSegment.value[1]) {
+      result.error = true;
       return false;
     }
-    maybeCall(cbs.success, this, nodePath, key);
+    // if key is the same remove error and same nodePath
+    result.error = false;
+    result.nodePath = nodePath;
+    // move to the next step
     currentSegment = segments.next();
+    // check if remaining segment is the last one
+    result.isLastSegment = isLastIterItem(currentSegment, lastIdx);
+    // if iterator done the we done as well
     if (currentSegment.done) this.abort();
+    // if we have one more step then mark it as error(in case we have empty object)
+    // that won't be visited
+    result.error = true;
+    // save current segment to result in case we need to create a new property
+    result.segment = currentSegment.value[1];
+    // try to traverse current branch(this won't work is object is empty)
     this.traverse(nodePath);
   });
-  maybeCall(cbs.afterAll);
+  // if we didn't make it to the last node then traverse was unsuccessful
+  if (!result.isLastSegment) result.error = true;
+  return result;
 }
 
 export function getObjectValue(ast, path) {
-  let value;
-  traverseObjectNestedPath(ast, path, {
-    success(nodePath) { value = nodePath.node.value; },
-    error() { value = undefined; }
-  });
-  return value;
+  let { nodePath, error } = traverseObjectNestedPath(ast, path);
+  return error ? null : nodePath.node.value;
 }
 
 export function setObjectValue(ast, path, value) {
-  let error = false;
-  let nodePathToUpdate;
-  let skip = false;
-  traverseObjectNestedPath(ast, path, {
-    success(nodePath) {
-      nodePathToUpdate = nodePath;
-      error = false;
-    },
-    error(nodePath, pathSegment) {
-      if (path.endsWith(pathSegment)
-          && namedTypes.ObjectExpression.check(nodePath.parentPath.node)) {
-        let prop = buildObjectProperty(pathSegment, value);
-        console.log('new prop', prop, nodePath);
-        nodePath.parentPath.node.properties.push(prop);
-        error = false;
-        skip = true;
-        this.abort();
-      } else {
-        error = true
-      }
-    },
-    afterAll() {
-      if (!error && !skip) nodePathToUpdate.node.value = parseValue(value);
-    }
-  });
+  let { nodePath, error, segment, isLastSegment } = traverseObjectNestedPath(ast, path);
+  let object = nodePath ? nodePath.node.value : ast;
+  if (error && isLastSegment && namedTypes.ObjectExpression.check(object)) {
+    let prop = buildObjectProperty(segment, value);
+    object.properties.push(prop);
+    error = false;
+  } else if (!error) {
+    nodePath.node.value = parseValue(value);
+  }
   return !error;
 }
 
 export function removeObjectKey(ast, path) {
-  let error = false;
-  let nodePathToRemove;
-  traverseObjectNestedPath(ast, path, {
-    success(nodePath) { nodePathToRemove = nodePath; error = false; },
-    error() { error = true; },
-    afterAll() { if (!error) nodePathToRemove.prune(); }
-  });
+  let { nodePath, error } = traverseObjectNestedPath(ast, path)
+  if (!error) nodePath.prune();
   return !error;
 }
 
