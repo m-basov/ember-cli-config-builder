@@ -3,9 +3,9 @@ import { EnvBlock } from './environment-adapter/env-block';
 import { print } from '../ast-utils/common';
 import {
   findObjectByIdentifier,
-  getObjectValue,
-  setObjectValue,
-  removeObjectKey
+  getKey,
+  setKey,
+  removeKey
 } from '../ast-utils/object-expression';
 
 
@@ -21,16 +21,16 @@ export class EnvironmentAdapter extends BaseAdapter {
   }
 
   get(key) {
-    let value = getObjectValue(this.envObjAst, key);
+    let value = getKey(this.envObjAst, key);
     return print(value);
   }
 
   set(key, value) {
-    return setObjectValue(this.envObjAst, key, value);
+    return setKey(this.envObjAst, key, value);
   }
 
   remove(key) {
-    return removeObjectKey(this.envObjAst, key);
+    return removeKey(this.envObjAst, key);
   }
 
   env(name) {

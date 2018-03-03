@@ -52,12 +52,12 @@ export function traverseObjectNestedPath(ast, path): any {
   return result;
 }
 
-export function getObjectValue(ast, path) {
+export function getKey(ast, path) {
   let { nodePath, error } = traverseObjectNestedPath(ast, path);
   return error ? null : nodePath.node.value;
 }
 
-export function setObjectValue(ast, path, value) {
+export function setKey(ast, path, value) {
   let { nodePath, error, segment, isLastSegment } = traverseObjectNestedPath(ast, path);
   let object = nodePath ? nodePath.node.value : ast;
   if (error && isLastSegment && namedTypes.ObjectExpression.check(object)) {
@@ -70,7 +70,7 @@ export function setObjectValue(ast, path, value) {
   return !error;
 }
 
-export function removeObjectKey(ast, path) {
+export function removeKey(ast, path) {
   let { nodePath, error } = traverseObjectNestedPath(ast, path)
   if (!error) nodePath.prune();
   return !error;
