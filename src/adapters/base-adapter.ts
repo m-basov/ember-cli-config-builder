@@ -6,7 +6,7 @@ export abstract class BaseAdapter {
   protected ast;
   protected charset;
 
-  abstract get(key: string): any;
+  abstract get(key: string): string;
   abstract set(key: string, value: any): boolean;
   abstract remove(key: string): boolean;
 

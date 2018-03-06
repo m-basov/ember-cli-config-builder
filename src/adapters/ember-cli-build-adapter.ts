@@ -13,6 +13,7 @@ export class EmberCliBuildAdapter extends BaseAdapter {
 
   get(key) {
     console.log('ember-cli-build-adapter get:', key);
+    return '';
   }
 
   remove(key) {

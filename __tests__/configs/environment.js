@@ -20,7 +20,11 @@ module.exports = function(environment) {
     APP: {
       // Here you can pass flags/options to your application instance
       // when it is created
-    }
+    },
+    first: { one: { two: {} } },
+    second: { one: {} },
+    third: {},
+    fourth: { one: { two: { three: false } } }
   };
 
   if (environment === 'development') {
@@ -44,7 +48,10 @@ module.exports = function(environment) {
   }
 
   if (environment === 'production') {
-    ENV.rootURL = '/prod';
+    ENV.first.one.two.three = 'first';
+    ENV['second'].one['two'] = { test: true, three: 'second' };
+    ENV.third.one = { someProp: { test: true }, two: { three: 'third' } };
+    ENV.fourth.one.two.three = 'fourth';
     // here you can enable a production-specific feature
   }
 

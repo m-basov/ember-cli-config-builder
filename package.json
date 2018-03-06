@@ -18,5 +18,8 @@
   },
   "dependencies": {
     "recast": "^0.14.4"
+  },
+  "nodemonConfig": {
+    "ignore": ["src/*", "__tests__/*"]
   }
 }

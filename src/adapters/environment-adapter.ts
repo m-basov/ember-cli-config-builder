@@ -15,9 +15,8 @@ export class EnvironmentAdapter extends BaseAdapter {
   constructor(opts) {
     super(opts);
 
-    let envObjAst = findObjectByIdentifier(this.ast, 'ENV');
-    if (!envObjAst) throw new Error(`Cannot locate "ENV" object.`);
-    this.envObjAst = envObjAst;
+    this.envObjAst = findObjectByIdentifier(this.ast, 'ENV');
+    if (!this.envObjAst) throw new Error(`Cannot locate "ENV" object.`);
   }
 
   get(key) {
@@ -35,9 +34,7 @@ export class EnvironmentAdapter extends BaseAdapter {
 
   env(name) {
     return new EnvBlock({
-      path: this.path,
-      charset: this.charset,
-      ast: this.ast,
+      parent: this,
       name
     });
   }
