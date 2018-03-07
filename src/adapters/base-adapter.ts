@@ -16,14 +16,17 @@ export abstract class BaseAdapter {
     this.ast = ast;
   }
 
-  save(path, charset): string {
-    path = path || this.path;
-    charset = charset || this.charset;
-    let content = print(this.ast);
+  save(path, charset): Promise<string> {
+    return new Promise((resolve, reject) => {
+      path = path || this.path;
+      charset = charset || this.charset;
+      let content = print(this.ast);
 
-    fs.writeFileSync(path, content, charset);
-
-    return content;
+      fs.writeFile(path, content, charset, (err) => {
+        if (err) reject(err);
+        resolve(content);
+      })
+    });
   }
 
   getProperties(keys: string[]): Object {

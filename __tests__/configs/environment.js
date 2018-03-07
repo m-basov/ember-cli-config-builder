@@ -52,6 +52,8 @@ module.exports = function(environment) {
     ENV['second'].one['two'] = { test: true, three: 'second' };
     ENV.third.one = { someProp: { test: true }, two: { three: 'third' } };
     ENV.fourth.one.two.three = 'fourth';
+    ENV['string-path'] = 'string-path';
+    ENV.rootURL = '/prod';
     // here you can enable a production-specific feature
   }
 

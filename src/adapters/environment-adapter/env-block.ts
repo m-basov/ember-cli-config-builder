@@ -1,4 +1,4 @@
-import { visit, namedTypes, builders, print } from '../../ast-utils/common';
+import { visit, namedTypes, builders, print, parseValue } from '../../ast-utils/common';
 import { BaseAdapter } from '../base-adapter';
 
 function findEnvFunctionArgName(ast) {
@@ -77,6 +77,31 @@ function createEnvIfBlock(ast, envVarName, envName) {
   return ifBlock;
 }
 
+function findNode(ast, key) {
+  let value;
+  let path = key.split('.');
+  let isLastStep = (step) => (path.length - 1) <= step;
+  let isNotEqual = (prop, segment) => (prop.name !== segment && prop.value !== segment);
+
+  visit(ast, 'MemberExpression', function (nodePath) {
+    let current = 0;
+    if (nodePath.node.object.name !== 'ENV') return this.traverse(nodePath);
+    if (isNotEqual(nodePath.node.property, path[current])) return false;
+    let parent = nodePath.parentPath;
+    while (namedTypes.MemberExpression.check(parent.node)) {
+      if (isLastStep(current)) return false;
+      current++;
+      if (isNotEqual(parent.node.property, path[current])) return false;
+      parent = parent.parentPath;
+    }
+    if (!namedTypes.AssignmentExpression.check(parent.node)) return false;
+    value = parent;
+    this.abort();
+  });
+
+  return value;
+}
+
 export class EnvBlock extends BaseAdapter {
   private parent;
   private envVarName;
@@ -106,32 +131,40 @@ export class EnvBlock extends BaseAdapter {
   }
 
   get(key) {
-    let path = key.split('.').reverse().entries();
-    let currentSegment = path.next();
-    let node;
-
-    visit(this.ifBlockAst, 'MemberExpression', function (nodePath) {
-      let segment = currentSegment.value[1];
-      console.log('visit', segment, nodePath.node.property.name);
-      if (nodePath.node.property.name !== segment) {
-        node = null;
-        return false;
-      }
-      if (!node) node = nodePath;
-      currentSegment = path.next();
-      if (currentSegment.done) this.abort();
-      this.traverse(nodePath);
-    });
-
-    return print(node.parent.node.right);
+    let nodePath = findNode(this.ifBlockAst, key);
+    return print(nodePath && nodePath.node.right);
   }
 
-  set(_key, _value) {
-    return false;
+  set(key, value) {
+    let nodePath = findNode(this.ifBlockAst, key);
+    if (nodePath) {
+      nodePath.node.right = parseValue(value);
+      return true;
+    }
+    let path = key.split('.').reverse();
+    let current = 0;
+    let membership = builders.memberExpression(
+      builders.identifier('ENV'),
+      builders.identifier(path[current])
+    );
+    current++;
+    while (current < path.length) {
+      membership = builders.memberExpression(
+        membership,
+        builders.identifier(path[current])
+      );
+      current++;
+    }
+    let assignment = builders.assignmentExpression('=', membership, parseValue(value));
+    this.ifBlockAst.consequent.body.push(assignment);
+    return true;
   }
 
-  remove(_key) {
-    return false;
+  remove(key) {
+    let nodePath = findNode(this.ifBlockAst, key);
+    if (!nodePath) return false;
+    nodePath.prune();
+    return true;
   }
 
   save() {

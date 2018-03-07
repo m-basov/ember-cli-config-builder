@@ -18,15 +18,19 @@ function getAdapter(name) {
 }
 
 function parseFile(configPath, charset = DEFAULT_CHARSET) {
-  let content = fs.readFileSync(configPath, charset);
-  return parse(content);
+  return new Promise((resolve, reject) => {
+    fs.readFile(configPath, charset, (err, content) => {
+      if (err) reject(err);
+      resolve(parse(content));
+    });
+  });
 }
 
 export default {
-  create(configPath, options: { charset?: string, adapter?: string } = {}) {
+  async create(configPath, options: { charset?: string, adapter?: string } = {}) {
     let absolutePath = path.resolve(configPath);
     let charset = options.charset || DEFAULT_CHARSET;
-    let ast = parseFile(absolutePath, charset);
+    let ast = await parseFile(absolutePath, charset);
 
     let adapterName = options.adapter || getAdapterName(absolutePath);
     let Adapter = getAdapter(adapterName);
