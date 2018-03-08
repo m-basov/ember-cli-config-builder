@@ -17,7 +17,8 @@ const objAst = `({
     // comment
   },
   middleNode: true,
-  lastKey(arg) { return arg; }
+  lastKey(arg) { return arg; },
+  'literal-key': true
 })`;
 
 it('should get key', () => {
@@ -33,6 +34,7 @@ it('should get key', () => {
   expectGet('nodeWithComments', '{}');
   expectGet('middleNode', 'true');
   expectGet('lastKey', 'function(arg) { return arg; }');
+  expectGet('literal-key', 'true');
 });
 
 it('should set key', () => {
@@ -53,6 +55,12 @@ it('should set key', () => {
 
   expectSet('middleNode', 'function(arg) { return arg; }', true);
   expectIncludes('middleNode: function(arg) { return arg; }', true);
+
+  expectSet('literal-key', 'test', true);
+  expectIncludes('literal-key', true);
+
+  expectSet('new-literal-key', 'true', true);
+  expectIncludes('new-literal-key', true);
 });
 
 it('should remove key', () => {
@@ -77,4 +85,7 @@ it('should remove key', () => {
 
   expectRemove('lastKey', true);
   expectIncludes('lastKey', false);
+
+  expectRemove('literal-key', true);
+  expectIncludes('literal-key', false);
 });

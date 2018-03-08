@@ -1,4 +1,4 @@
-import { visit, parseValue, builders, namedTypes } from './common';
+import { visit, parseValue, builders, namedTypes, keyType } from './common';
 import { isLastIterItem, splitPath } from '../utils/common';
 
 export function findObjectByIdentifier(ast, key) {
@@ -26,7 +26,8 @@ export function traverseObjectNestedPath(ast, path): any {
 
   visit(ast, "Property", function (nodePath) {
     // if key is not the same as node name stop traversing this subtree
-    if (nodePath.node.key.name !== currentSegment.value[1]) {
+    if (nodePath.node.key.name !== currentSegment.value[1]
+        && nodePath.node.key.value !== currentSegment.value[1]) {
       result.error = true;
       return false;
     }
@@ -79,7 +80,7 @@ export function removeKey(ast, path) {
 export function buildObjectProperty(key, value) {
   return builders.property(
     'init',
-    builders.identifier(key),
+    builders[keyType(key)](key),
     parseValue(value)
   );
 }
