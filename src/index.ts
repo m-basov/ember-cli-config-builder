@@ -4,8 +4,7 @@ import { parse } from './ast-utils/common';
 import adapters from './adapters';
 
 const DEFAULT_CHARSET = 'utf-8';
-
-let ADAPTERS = {...adapters};
+const ADAPTERS = {...adapters};
 
 function getAdapterName(configPath) {
   return path.parse(configPath).name;
@@ -42,7 +41,7 @@ export default {
     });
   },
 
-  registerAdapter(name, adapter) {
+  registerAdapter(name: string, adapter) {
     ADAPTERS[name] = adapter;
     return ADAPTERS;
   }
