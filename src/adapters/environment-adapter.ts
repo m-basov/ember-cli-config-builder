@@ -8,7 +8,6 @@ import {
   removeKey
 } from '../ast-utils/object-expression';
 
-
 export class EnvironmentAdapter extends BaseAdapter {
   private envObjAst;
 
@@ -16,23 +15,23 @@ export class EnvironmentAdapter extends BaseAdapter {
     super(opts);
 
     this.envObjAst = findObjectByIdentifier(this.ast, 'ENV');
-    if (!this.envObjAst) throw new Error(`Cannot locate "ENV" object.`);
+    if (!this.envObjAst) { throw new Error(`Cannot locate "ENV" object.`); }
   }
 
-  get(key) {
+  public get(key) {
     let value = getKey(this.envObjAst, key);
     return print(value);
   }
 
-  set(key, value) {
+  public set(key, value) {
     return setKey(this.envObjAst, key, value);
   }
 
-  remove(key) {
+  public remove(key) {
     return removeKey(this.envObjAst, key);
   }
 
-  env(name) {
+  public env(name) {
     return new EnvBlock({
       parent: this,
       name

@@ -3,7 +3,7 @@ import { isLastIterItem, splitPath } from '../utils/common';
 
 export function findObjectByIdentifier(ast, key) {
   let obj;
-  visit(ast, "VariableDeclarator", function (nodePath) {
+  visit(ast, 'VariableDeclarator', function(nodePath) {
     if (nodePath.node.id.name === key) {
       obj = nodePath.node.init;
       this.abort();
@@ -24,10 +24,12 @@ export function traverseObjectNestedPath(ast, path): any {
     isLastSegment: isLastIterItem(currentSegment, lastIdx)
   };
 
-  visit(ast, "Property", function (nodePath) {
+  visit(ast, 'Property', function(nodePath) {
     // if key is not the same as node name stop traversing this subtree
-    if (nodePath.node.key.name !== currentSegment.value[1]
-        && nodePath.node.key.value !== currentSegment.value[1]) {
+    if (
+      nodePath.node.key.name !== currentSegment.value[1] &&
+      nodePath.node.key.value !== currentSegment.value[1]
+    ) {
       result.error = true;
       return false;
     }
@@ -39,7 +41,7 @@ export function traverseObjectNestedPath(ast, path): any {
     // check if remaining segment is the last one
     result.isLastSegment = isLastIterItem(currentSegment, lastIdx);
     // if iterator done the we done as well
-    if (currentSegment.done) this.abort();
+    if (currentSegment.done) { this.abort(); }
     // if we have one more step then mark it as error(in case we have empty object)
     // that won't be visited
     result.error = true;
@@ -49,7 +51,7 @@ export function traverseObjectNestedPath(ast, path): any {
     this.traverse(nodePath);
   });
   // if we didn't make it to the last node then traverse was unsuccessful
-  if (!result.isLastSegment) result.error = true;
+  if (!result.isLastSegment) { result.error = true; }
   return result;
 }
 
@@ -59,7 +61,10 @@ export function getKey(ast, path) {
 }
 
 export function setKey(ast, path, value) {
-  let { nodePath, error, segment, isLastSegment } = traverseObjectNestedPath(ast, path);
+  let { nodePath, error, segment, isLastSegment } = traverseObjectNestedPath(
+    ast,
+    path
+  );
   let object = nodePath ? nodePath.node.value : ast;
   if (error && isLastSegment && namedTypes.ObjectExpression.check(object)) {
     let prop = buildObjectProperty(segment, value);
@@ -72,8 +77,8 @@ export function setKey(ast, path, value) {
 }
 
 export function removeKey(ast, path) {
-  let { nodePath, error } = traverseObjectNestedPath(ast, path)
-  if (!error) nodePath.prune();
+  let { nodePath, error } = traverseObjectNestedPath(ast, path);
+  if (!error) { nodePath.prune(); }
   return !error;
 }
 

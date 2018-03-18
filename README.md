@@ -2,14 +2,14 @@
 
 Extensible library to edit Ember’s config files with familiar API.
 
-## NOT PUBLISHED YET
-
 ## Installation
-- with ember `$ ember install ember-cli-config-builder`
-- with npm `$ npm install --save ember-cli-config-builder`
-- with yarn `$ yarn add ember-cli-config-builder`
+
+* with ember `$ ember install ember-cli-config-builder`
+* with npm `$ npm install --save ember-cli-config-builder`
+* with yarn `$ yarn add ember-cli-config-builder`
 
 ## Basic Usage
+
 ```javascript
 // Import library
 const ConfigBuilder = require('ember-cli-config-builder');
@@ -46,7 +46,7 @@ config.removeProperties(['myNewProp', 'modulePrefix']); // { myNewProp: true, mo
 
 // After editing is done there are a few options to save result.
 // The most straightforward is save to the same file.
-// Notice: this method is async as well because of usage non-blocking 
+// Notice: this method is async as well because of usage non-blocking
 // fs.writeFile method
 await config.save(); // will write changes to disk and return string with file content
 // Or you can write changes to another file
@@ -55,25 +55,31 @@ await config.save('./my-addon/config/new-environment.js');
 ```
 
 ## Built-in adapters
-- environment.js
-- ember-cli-build.js
+
+* environment.js
+* ember-cli-build.js
 
 ## Alternatives
-- [ember-cli-build-config-editor](https://github.com/srvance/ember-cli-build-config-editor) – uses the same approach with recast AST trees but is have many limits what you can edit and uses it owns non-Ember intuitive API. Also it moves reading and writing files to user responsibilities.
-- [recast](https://github.com/benjamn/recast) – very powerful but yet very low-level tool to parse, edit and print JavaScript files. This addon wraps it to make editing much more easier.
+
+* [ember-cli-build-config-editor](https://github.com/srvance/ember-cli-build-config-editor) – uses the same approach with recast AST trees but is have many limits what you can edit and uses it owns non-Ember intuitive API. Also it moves reading and writing files to user responsibilities.
+* [recast](https://github.com/benjamn/recast) – very powerful but yet very low-level tool to parse, edit and print JavaScript files. This addon wraps it to make editing much more easier.
 
 ## Advanced Usage
+
 TODO: write this :)
 
 ## Contributing
 
 ### Installation
+
 `git clone git@github.com:kolybasov/ember-cli-config-builder.git`
 `cd ember-cli-config-builder`
 `yarn install`
 
 ### Running tests
+
 `yarn test` – Runs jest tests
 
 ## License
+
 This project is licensed under the [MIT License](./LICENSE.md).

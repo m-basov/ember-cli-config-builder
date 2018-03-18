@@ -6,44 +6,46 @@ export abstract class BaseAdapter {
   protected ast;
   protected charset;
 
-  abstract get(key: string): string;
-  abstract set(key: string, value: any): boolean;
-  abstract remove(key: string): boolean;
-
   constructor({ path, charset, ast }) {
     this.path = path;
     this.charset = charset;
     this.ast = ast;
   }
 
-  save(path, charset): Promise<string> {
+  public abstract get(key: string): string;
+  public abstract set(key: string, value: any): boolean;
+  public abstract remove(key: string): boolean;
+
+  public save(path?, charset?): Promise<string> {
     return new Promise((resolve, reject) => {
       path = path || this.path;
       charset = charset || this.charset;
       let content = print(this.ast);
 
       fs.writeFile(path, content, charset, (err) => {
-        if (err) reject(err);
+        if (err) {
+          reject(err);
+        }
         resolve(content);
-      })
+      });
     });
   }
 
-  getProperties(keys: string[]): Object {
+  public getProperties(keys: string[]): object {
     return keys.reduce((acc, key) => {
       acc[key] = this.get(key);
       return acc;
     }, {});
   }
 
-  setProperties(props: Object): Object {
+  public setProperties(props: object): object {
     return Object.keys(props).reduce((acc, key) => {
       acc[key] = this.set(key, props[key]);
       return acc;
     }, {});
   }
 
-  removeProperties(keys: string[]): Object {
+  public removeProperties(keys: string[]): object {
     return keys.reduce((acc, key) => {
       acc[key] = this.remove(key);
       return acc;

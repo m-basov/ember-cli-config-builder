@@ -1,9 +1,9 @@
-const {
+import {
   getKey,
   setKey,
   removeKey
-} = require('../../lib/ast-utils/object-expression');
-const { parse, print } = require('../../lib/ast-utils/common');
+} from '../../src/ast-utils/object-expression';
+import { parse, print } from '../../src/ast-utils/common';
 
 const objAst = `({
   firstKey: true,
@@ -23,7 +23,8 @@ const objAst = `({
 
 it('should get key', () => {
   let ast = parse(objAst);
-  let expectGet = (key, expected) => expect(print(getKey(ast, key))).toEqual(expected);
+  let expectGet = (key, expected) =>
+    expect(print(getKey(ast, key))).toEqual(expected);
 
   expectGet('firstKey', 'true');
   expectGet('nestedKey.child', '{\n  child: []\n}');
@@ -39,8 +40,10 @@ it('should get key', () => {
 
 it('should set key', () => {
   let ast = parse(objAst).program.body[0].expression;
-  let expectSet = (key, val, expected) => expect(setKey(ast, key, val)).toEqual(expected);
-  let expectIncludes = (str, expected) => expect(print(ast).includes(str)).toEqual(expected);
+  let expectSet = (key, val, expected) =>
+    expect(setKey(ast, key, val)).toEqual(expected);
+  let expectIncludes = (str, expected) =>
+    expect(print(ast).includes(str)).toEqual(expected);
 
   expectSet('firstKey', 'false', true);
   expectIncludes('firstKey: false', true);
@@ -65,8 +68,10 @@ it('should set key', () => {
 
 it('should remove key', () => {
   let ast = parse(objAst);
-  let expectRemove = (key, expected) => expect(removeKey(ast, key)).toEqual(expected);
-  let expectIncludes = (str, expected) => expect(print(ast).includes(str)).toEqual(expected);
+  let expectRemove = (key, expected) =>
+    expect(removeKey(ast, key)).toEqual(expected);
+  let expectIncludes = (str, expected) =>
+    expect(print(ast).includes(str)).toEqual(expected);
 
   expectRemove('firstKey', true);
   expectIncludes('firstKey: true', false);
