@@ -1,6 +1,6 @@
 {
   "name": "ember-cli-config-builder",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Edit Ember app configs in your addon blueprints!",
   "main": "index.js",
   "repository": "https://github.com/kolybasov/ember-cli-config-builder",
@@ -12,7 +12,7 @@
     "build": "yarn clean && tsc",
     "lint": "tslint -p tsconfig.json",
     "test": "jest",
-    "prepublish": "yarn lint && yarn test"
+    "prepare": "yarn lint && yarn test"
   },
   "devDependencies": {
     "@types/jest": "^22.2.0",
