@@ -1,5 +1,9 @@
 # ember-cli-config-builder
 
+[![Build Status](https://travis-ci.org/kolybasov/ember-cli-config-builder.svg?branch=master)](https://travis-ci.org/kolybasov/ember-cli-config-builder)
+[![Ember Observer Score](https://emberobserver.com/badges/ember-cli-config-builder.svg)](https://emberobserver.com/addons/ember-cli-config-builder)
+[![npm version](https://badge.fury.io/js/ember-cli-config-builder.svg)](https://badge.fury.io/js/ember-cli-config-builder)
+
 Extensible library to edit Ember’s config files with familiar API.
 
 ## Installation
