@@ -1,9 +1,10 @@
 /__tests__
 /src
 **/.gitkeep
-/.editorconfig
-/.gitignore
-/.travis.yml
-/jest.config.json
-/prettier.config.json
-/tslint.json
+.editorconfig
+.gitignore
+.travis.yml
+jest.config.json
+prettier.config.json
+tslint.json
+*.log
