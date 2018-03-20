@@ -6,6 +6,8 @@
 
 Extensible library to edit Ember’s config files with familiar API.
 
+Why? Checkout this [blog post](https://kolybasov.github.io/posts/making-ember-addon-installation-smoother/).
+
 ## Installation
 
 * with ember `$ ember install ember-cli-config-builder`
