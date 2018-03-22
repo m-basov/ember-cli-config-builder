@@ -1,5 +1,3 @@
 'use strict';
 
-module.exports = {
-  name: 'ember-cli-config-builder'
-};
+module.exports = require('./lib').default;
