@@ -40,3 +40,15 @@ it('should allow to specify adapter and charset', async () => {
   );
   expect(envConfig.get('rootURL')).toEqual("'/'");
 });
+
+it('should allow to parse raw values from #get() into JS values', async () => {
+  [
+    { raw: "'string'", parsed: 'string' },
+    { raw: '3', parsed: 3 },
+    { raw: 'true', parsed: true },
+    { raw: "[1, '2', true, null]", parsed: [1, '2', true, null] },
+    { raw: '{ obj: [true] }', parsed: { obj: [true] } }
+  ].forEach((val) => {
+    expect(ConfigBuilder.parse(val.raw)).toEqual(val.parsed);
+  });
+});

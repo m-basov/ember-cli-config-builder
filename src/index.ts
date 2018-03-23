@@ -54,5 +54,9 @@ export default {
   registerAdapter(name: string, adapter) {
     ADAPTERS[name] = adapter;
     return ADAPTERS;
+  },
+
+  parse(raw) {
+    return new Function(`return ${raw};`)();
   }
 };
