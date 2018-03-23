@@ -19,7 +19,9 @@ export class EmberCliBuildAdapter extends BaseAdapter {
   constructor(opts) {
     super(opts);
     this.findObj();
-    if (!this.objAst) { throw new Error('Cannot locate build object.'); }
+    if (!this.objAst) {
+      throw new Error('Cannot locate build object.');
+    }
     this.findTreeReturn();
   }
 
@@ -40,7 +42,9 @@ export class EmberCliBuildAdapter extends BaseAdapter {
     let importStatement = this.findImport(path);
 
     if (!importStatement) {
-      if (!this.treeReturn) { throw new Error('Cannot locate app tree return.'); }
+      if (!this.treeReturn) {
+        throw new Error('Cannot locate app tree return.');
+      }
       importStatement = builders.expressionStatement(
         builders.callExpression(
           builders.memberExpression(
@@ -58,7 +62,9 @@ export class EmberCliBuildAdapter extends BaseAdapter {
 
   public removeImport(path) {
     let importStatement = this.findImport(path);
-    if (!importStatement) { return false; }
+    if (!importStatement) {
+      return false;
+    }
     importStatement.prune();
     return true;
   }
@@ -69,14 +75,35 @@ export class EmberCliBuildAdapter extends BaseAdapter {
       if (
         nodePath.node.id.name === 'app' &&
         namedTypes.NewExpression.check(nodePath.node.init) &&
-        EMBER_BUILDERS.indexOf(nodePath.node.init.callee.name) !== -1 &&
-        namedTypes.ObjectExpression.check(nodePath.node.init.arguments[1])
+        EMBER_BUILDERS.indexOf(nodePath.node.init.callee.name) !== -1
       ) {
-        ctx.objAst = nodePath.node.init.arguments[1];
+        let arg = nodePath.node.init.arguments[1];
+        if (namedTypes.ObjectExpression.check(arg)) {
+          ctx.objAst = arg;
+        } else if (namedTypes.Identifier.check(arg)) {
+          ctx.objAst = ctx.findObjByIdentifier(arg.name);
+        }
         this.abort();
       }
       this.traverse(nodePath);
     });
+  }
+
+  private findObjByIdentifier(id) {
+    let obj;
+
+    visit(this.ast, 'VariableDeclarator', function(nodePath) {
+      if (
+        nodePath.node.id.name === id &&
+        namedTypes.ObjectExpression.check(nodePath.node.init)
+      ) {
+        obj = nodePath.node.init;
+        this.abort();
+      }
+      this.traverse(nodePath);
+    });
+
+    return obj;
   }
 
   private findTreeReturn() {

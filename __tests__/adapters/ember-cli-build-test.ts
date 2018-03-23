@@ -14,8 +14,8 @@ it('should set values to app config', async () => {
     './__tests__/configs/ember-cli-build.js'
   );
   buildConfig.set('ember-medium-editor', '{}');
-  buildConfig.set('ember-medium-editor.theme', '\'default\'');
-  expect(buildConfig.get('ember-medium-editor')).toContain('theme: \'default\'');
+  buildConfig.set('ember-medium-editor.theme', "'default'");
+  expect(buildConfig.get('ember-medium-editor')).toContain("theme: 'default'");
 });
 
 it('should remove value from app config', async () => {
@@ -35,7 +35,7 @@ it('should add import', async () => {
   buildConfig.addImport('test-import.js');
   let file = await tmp.file();
   let content = await buildConfig.save(file.path);
-  expect(content).toContain('app.import(\'test-import.js\')');
+  expect(content).toContain("app.import('test-import.js')");
   file.cleanup();
 });
 
@@ -48,7 +48,7 @@ it('should remove import', async () => {
   buildConfig.addImport('test-import.js');
 
   let content = await buildConfig.save(file.path);
-  expect(content).toContain('app.import(\'test-import.js\')');
+  expect(content).toContain("app.import('test-import.js')");
 
   buildConfig.removeImport('test-import.js');
 
@@ -56,4 +56,12 @@ it('should remove import', async () => {
   expect(content).not.toContain('test-import.js');
 
   file.cleanup();
+});
+
+it('should parse file with config in the separate object', async () => {
+  let buildConfig = await ConfigBuilder.create(
+    './__tests__/configs/ember-cli-build-extracted-object.js',
+    { adapter: 'ember-cli-build' }
+  );
+  expect(buildConfig.get('ember-cli-babel.includePolyfill')).toEqual('true');
 });
