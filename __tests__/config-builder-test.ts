@@ -52,3 +52,20 @@ it('should allow to parse raw values from #get() into JS values', () => {
     expect(ConfigBuilder.parse(val.raw)).toEqual(val.parsed);
   });
 });
+
+it('should allow to stringify values', () => {
+  [
+    { raw: 'string', string: "'string'" },
+    { raw: 3, string: '3' },
+    { raw: true, string: 'true' },
+    { raw: [1, '2', true, null], string: "[1,'2',true,null]" },
+    { raw: { obj: [true] }, string: '{obj:[true]}' }
+  ].forEach((val) => {
+    expect(ConfigBuilder.stringify(val.raw)).toEqual(val.string);
+  });
+});
+
+it('should define createSync method', () => {
+  let envConfig = ConfigBuilder.createSync('./__tests__/configs/environment.js');
+  expect(envConfig.get('rootURL')).toEqual("'/'");
+});

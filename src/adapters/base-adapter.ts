@@ -31,6 +31,15 @@ export abstract class BaseAdapter {
     });
   }
 
+  public saveSync(path?, charset?): string {
+    path = path || this.path;
+    charset = charset || this.charset;
+    let content = print(this.ast);
+
+    fs.writeFile(path, content, charset);
+    return content;
+  }
+
   public getProperties(keys: string[]): object {
     return keys.reduce((acc, key) => {
       acc[key] = this.get(key);

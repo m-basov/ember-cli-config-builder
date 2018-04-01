@@ -1,6 +1,6 @@
 {
   "name": "ember-cli-config-builder",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Edit Ember app configs in your addon blueprints!",
   "main": "index.js",
   "repository": "https://github.com/kolybasov/ember-cli-config-builder",
@@ -25,7 +25,13 @@
     "typescript": "^2.7.2"
   },
   "dependencies": {
+    "javascript-stringify": "^1.6.0",
     "recast": "^0.14.4"
   },
-  "keywords": ["ember-util", "config", "util", "ember"]
+  "keywords": [
+    "ember-util",
+    "config",
+    "util",
+    "ember"
+  ]
 }

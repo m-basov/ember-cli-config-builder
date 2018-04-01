@@ -69,3 +69,26 @@ it('should define save method', async () => {
   file.cleanup();
   anotherFile.cleanup();
 });
+
+it('should define saveSync method', async () => {
+  let file = await tmp.file();
+  let anotherFile = await tmp.file();
+
+  let adapter = new TestAdapter({
+    path: file.path,
+    charset: 'utf-8',
+    ast: builders.literal('test')
+  });
+
+  let content = adapter.save();
+  let anotherContent = adapter.save(anotherFile.path);
+
+  expect(content).toEqual(anotherContent);
+  expect(fs.readFileSync(file.path, 'utf-8')).toEqual(
+    fs.readFileSync(anotherFile.path, 'utf-8')
+  );
+
+  // clean up tmp files
+  file.cleanup();
+  anotherFile.cleanup();
+});

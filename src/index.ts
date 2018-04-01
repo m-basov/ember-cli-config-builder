@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { parse } from './ast-utils/common';
 import adapters from './adapters';
+import stringify from 'javascript-stringify';
 
 const DEFAULT_CHARSET = 'utf-8';
 const ADAPTERS = { ...adapters } as any;
@@ -31,6 +32,11 @@ function parseFile(configPath, charset = DEFAULT_CHARSET) {
   });
 }
 
+function parseFileSync(configPath, charset = DEFAULT_CHARSET) {
+  let content = fs.readFileSync(configPath, charset);
+  return parse(content);
+}
+
 export default {
   async create(
     configPath,
@@ -51,6 +57,25 @@ export default {
     });
   },
 
+  createSync(
+    configPath,
+    options: { charset?: string; adapter?: string } = {}
+  ) {
+    let absolutePath = path.resolve(configPath);
+    let charset = options.charset || DEFAULT_CHARSET;
+    let ast = parseFileSync(absolutePath, charset);
+
+    let adapterName = options.adapter || getAdapterName(absolutePath);
+    // tslint:disable-next-line
+    let Adapter = getAdapter(adapterName);
+
+    return new Adapter({
+      path: absolutePath,
+      charset,
+      ast
+    });
+  },
+
   registerAdapter(name: string, adapter) {
     ADAPTERS[name] = adapter;
     return ADAPTERS;
@@ -58,5 +83,9 @@ export default {
 
   parse(raw) {
     return new Function(`return ${raw};`)();
+  },
+
+  stringify(val: any): string {
+    return stringify(val);
   }
 };
