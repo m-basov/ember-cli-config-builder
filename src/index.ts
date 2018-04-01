@@ -85,7 +85,7 @@ export default {
     return new Function(`return ${raw};`)();
   },
 
-  stringify(val: any): string {
-    return stringify(val);
+  stringify(...args): string {
+    return stringify.apply(null, args);
   }
 };
